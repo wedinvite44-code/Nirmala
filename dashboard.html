@@ -1607,7 +1607,7 @@
 </main>
 
 <script>
-  // ===== DATA STORE (localStorage) =====
+  // ===== DATA STORE =====
   const DS = {
     key: 'nirmala_dashboard_data',
     defaultData: {
@@ -1635,8 +1635,7 @@
         { initials: 'NL', name: 'Nadia Lestari', detail: '3 orang &middot; 3 hari lalu', status: 'tidak' }
       ],
       gallery: 6,
-      notifRead: false,
-      stats: { total: 3, confirmed: 142, views: 1248, pending: 18 }
+      notifRead: false
     },
     load() {
       try {
@@ -1655,60 +1654,51 @@
   };
 
   let data = DS.load();
+  let currentDeleteId = '';
+  let currentDeleteName = '';
 
-  // ===== RENDER FUNCTIONS =====
+  // ===== RENDER =====
   function renderInvitations() {
-    const tbody = document.querySelector('.invitations-table tbody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    data.invitations.forEach(inv => {
-      const tr = document.createElement('tr');
-      tr.id = 'row-' + inv.id;
-      tr.innerHTML = '<td><div class="invitation-preview"><div class="invitation-thumb ' + inv.theme + '">' + inv.icon + '</div><div><span class="invitation-name">' + inv.name + '</span><span class="invitation-type">' + inv.event + '</span></div></div></td><td>' + inv.type + '</td><td>' + inv.date + '</td><td>' + inv.guests + '</td><td><span class="status-badge ' + inv.status + '">' + (inv.status==='aktif'?'Aktif':inv.status==='draft'?'Draft':'Kadaluarsa') + '</span></td><td><div class="action-btns"><button class="action-btn" title="Lihat" onclick="location.href='invitation.html'">&#128065;</button><button class="action-btn" title="Edit" onclick="location.href='editor.html'">&#9998;</button><button class="action-btn" title="Bagikan" onclick="openModal('share', '' + inv.name + '')">&#128279;</button><button class="action-btn" title="Hapus" onclick="openModal('delete', '' + inv.id + '')">&#128465;</button></div></td>';
-      tbody.appendChild(tr);
+    const tbodies = document.querySelectorAll('.invitations-table tbody');
+    tbodies.forEach(tbody => {
+      tbody.innerHTML = '';
+      data.invitations.forEach(inv => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td><div class="invitation-preview"><div class="invitation-thumb ' + inv.theme + '">' + inv.icon + '</div><div><span class="invitation-name">' + inv.name + '</span><span class="invitation-type">' + inv.event + '</span></div></div></td><td>' + inv.type + '</td><td>' + inv.date + '</td><td>' + inv.guests + '</td><td><span class="status-badge ' + inv.status + '">' + (inv.status==="aktif"?"Aktif":inv.status==="draft"?"Draft":"Kadaluarsa") + '</span></td><td><div class="action-btns"><button class="action-btn" title="Lihat" onclick="location.href='invitation.html'">&#128065;</button><button class="action-btn" title="Edit" onclick="location.href='editor.html'">&#9998;</button><button class="action-btn" title="Bagikan" onclick="openModal('share', '' + inv.name + '')">&#128279;</button><button class="action-btn" title="Hapus" onclick="openModal('delete', '' + inv.id + '')">&#128465;</button></div></td>';
+        tbody.appendChild(tr);
+      });
     });
-    // Update stat card
     const totalEl = document.querySelector('.stat-card.gold .stat-value');
     if (totalEl) totalEl.textContent = data.invitations.length;
   }
 
   function renderGuests() {
     const list = document.querySelector('#tab-tamu .rsvp-list');
-    if (!list) return;
-    list.innerHTML = '';
-    data.guests.forEach(g => {
-      const div = document.createElement('div');
-      div.className = 'rsvp-item';
-      div.innerHTML = '<div class="rsvp-avatar">' + g.initials + '</div><div class="rsvp-info"><span class="rsvp-name">' + g.name + '</span><span class="rsvp-detail">' + g.detail + '</span></div><span class="rsvp-status ' + g.status + '">' + (g.status==='hadir'?'Hadir':g.status==='tidak'?'Tidak':'Belum') + '</span>';
-      list.appendChild(div);
-    });
-    // Update badge
+    if (list) {
+      list.innerHTML = '';
+      data.guests.forEach(g => {
+        const div = document.createElement('div');
+        div.className = 'rsvp-item';
+        div.innerHTML = '<div class="rsvp-avatar">' + g.initials + '</div><div class="rsvp-info"><span class="rsvp-name">' + g.name + '</span><span class="rsvp-detail">' + g.detail + '</span></div><span class="rsvp-status ' + g.status + '">' + (g.status==="hadir"?"Hadir":g.status==="tidak"?"Tidak":"Belum") + '</span>';
+        list.appendChild(div);
+      });
+    }
     const badge = document.querySelector('.nav-item:nth-child(4) .nav-badge');
     if (badge) badge.textContent = data.guests.length;
   }
 
   function renderRSVP() {
-    const list = document.querySelector('#tab-rsvp .rsvp-list');
-    if (!list) return;
-    list.innerHTML = '';
-    data.rsvps.forEach(r => {
-      const div = document.createElement('div');
-      div.className = 'rsvp-item';
-      div.innerHTML = '<div class="rsvp-avatar">' + r.initials + '</div><div class="rsvp-info"><span class="rsvp-name">' + r.name + '</span><span class="rsvp-detail">' + r.detail + '</span></div><span class="rsvp-status ' + r.status + '">' + (r.status==='hadir'?'Hadir':r.status==='tidak'?'Tidak':'Belum') + '</span>';
-      list.appendChild(div);
-    });
-    // Update dashboard RSVP list
-    const dashList = document.querySelector('#tab-dashboard .rsvp-list');
-    if (dashList) {
-      dashList.innerHTML = '';
-      data.rsvps.slice(0, 5).forEach(r => {
+    const lists = document.querySelectorAll('#tab-rsvp .rsvp-list, #tab-dashboard .rsvp-list');
+    lists.forEach((list, idx) => {
+      list.innerHTML = '';
+      const src = idx === 0 ? data.rsvps : data.rsvps.slice(0, 5);
+      src.forEach(r => {
         const div = document.createElement('div');
         div.className = 'rsvp-item';
-        div.innerHTML = '<div class="rsvp-avatar">' + r.initials + '</div><div class="rsvp-info"><span class="rsvp-name">' + r.name + '</span><span class="rsvp-detail">' + r.detail + '</span></div><span class="rsvp-status ' + r.status + '">' + (r.status==='hadir'?'Hadir':r.status==='tidak'?'Tidak':'Belum') + '</span>';
-        dashList.appendChild(div);
+        div.innerHTML = '<div class="rsvp-avatar">' + r.initials + '</div><div class="rsvp-info"><span class="rsvp-name">' + r.name + '</span><span class="rsvp-detail">' + r.detail + '</span></div><span class="rsvp-status ' + r.status + '">' + (r.status==="hadir"?"Hadir":r.status==="tidak"?"Tidak":"Belum") + '</span>';
+        list.appendChild(div);
       });
-    }
-    // Update stats
+    });
     const confirmed = data.rsvps.filter(r => r.status === 'hadir').reduce((a, r) => a + (parseInt(r.detail.match(/\d+/)?.[0]) || 1), 0);
     const pending = data.rsvps.filter(r => r.status === 'belum').length;
     const confEl = document.querySelector('.stat-card.success .stat-value');
@@ -1719,21 +1709,22 @@
 
   function renderGallery() {
     const grid = document.querySelector('#tab-galeri div[style*="grid-template-columns"]');
-    if (!grid) return;
-    grid.innerHTML = '';
-    const colors = [
-      'linear-gradient(135deg,var(--gold-light),var(--gold))',
-      'linear-gradient(135deg,#F0E6E6,#D4C4C4)',
-      'linear-gradient(135deg,#E8EDE8,#C4CEC4)',
-      'linear-gradient(135deg,#E8D5C4,#A89078)',
-      'linear-gradient(135deg,var(--gold-light),var(--gold))',
-      'linear-gradient(135deg,#F0E6E6,#D4C4C4)'
-    ];
-    for (let i = 0; i < data.gallery; i++) {
-      const div = document.createElement('div');
-      div.style.cssText = 'aspect-ratio:1;background:' + colors[i % colors.length] + ';border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2rem;';
-      div.innerHTML = '&#128247;';
-      grid.appendChild(div);
+    if (grid) {
+      grid.innerHTML = '';
+      const colors = [
+        'linear-gradient(135deg,var(--gold-light),var(--gold))',
+        'linear-gradient(135deg,#F0E6E6,#D4C4C4)',
+        'linear-gradient(135deg,#E8EDE8,#C4CEC4)',
+        'linear-gradient(135deg,#E8D5C4,#A89078)',
+        'linear-gradient(135deg,var(--gold-light),var(--gold))',
+        'linear-gradient(135deg,#F0E6E6,#D4C4C4)'
+      ];
+      for (let i = 0; i < data.gallery; i++) {
+        const div = document.createElement('div');
+        div.style.cssText = 'aspect-ratio:1;background:' + colors[i % colors.length] + ';border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2rem;';
+        div.innerHTML = '&#128247;';
+        grid.appendChild(div);
+      }
     }
   }
 
@@ -1750,9 +1741,9 @@
     renderGallery();
     renderNotifBadge();
     document.querySelectorAll('.chart-bar').forEach((bar, i) => {
-      const height = bar.style.height;
+      const h = bar.style.height;
       bar.style.height = '0%';
-      setTimeout(() => { bar.style.height = height; }, 100 + (i * 80));
+      setTimeout(() => { bar.style.height = h; }, 100 + (i * 80));
     });
   });
 
@@ -1792,44 +1783,14 @@
     window.scrollTo(0, 0);
   }
 
-  // ===== MODAL SYSTEM =====
-  let currentDeleteId = '';
-  let currentDeleteName = '';
+  // ===== MODAL =====
   function openModal(type, data) {
     const modal = document.getElementById('modal-' + type);
     if (!modal) return;
     if (type === 'delete' && data) {
       currentDeleteId = data;
-      const inv = data.invitations ? data : data;
-      const found = data.invitations ? null : data;
-      // data is the id string
-      const invData = data.invitations ? null : data;
-      const item = data.invitations ? null : data;
-      // Find invitation by id
-      const foundInv = data.invitations ? null : data;
-      let targetInv = null;
-      if (typeof data === 'string') {
-        targetInv = data; // it's the id
-        currentDeleteId = data;
-        const invItem = data.invitations ? null : data;
-        // Look up name
-        const match = data.invitations ? null : data;
-        for (let i = 0; i < data.length; i++) { /* placeholder */ }
-      }
-      // Simpler: data is the id string like 'royal'
-      currentDeleteId = data;
-      const invObj = data.invitations ? null : data;
-      let nameLookup = '';
-      for (let i = 0; i < (data.invitations ? data.invitations.length : 0); i++) { /* */ }
-      // Direct lookup from current data
-      const foundItem = data.invitations ? null : data;
-      let invName = data;
-      if (data === 'royal') invName = 'The Royal';
-      else if (data === 'rose') invName = 'Rose Garden';
-      else if (data === 'sage') invName = 'Sage Whisper';
-      else invName = data;
-      currentDeleteName = invName;
-      document.getElementById('delete-name').textContent = invName;
+      currentDeleteName = data === 'royal' ? 'The Royal' : data === 'rose' ? 'Rose Garden' : data === 'sage' ? 'Sage Whisper' : data;
+      document.getElementById('delete-name').textContent = currentDeleteName;
     }
     if (type === 'share' && data) {
       document.getElementById('share-url').value = 'https://nirmalainvite.com/u/' + data.toLowerCase().replace(/\s+/g, '-');
@@ -1837,12 +1798,14 @@
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
   }
+
   function closeModal(event) {
     if (event.target === event.currentTarget) {
       event.target.classList.remove('show');
       document.body.style.overflow = '';
     }
   }
+
   function closeModalDirect(type) {
     const modal = document.getElementById('modal-' + type);
     if (modal) {
@@ -1851,41 +1814,25 @@
     }
   }
 
-  // ===== COPY LINK =====
+  // ===== ACTIONS =====
   function copyLink() {
     const input = document.getElementById('share-url');
     input.select();
     input.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(input.value).then(() => {
-      showToast('Link berhasil disalin!');
-    }).catch(() => {
-      showToast('Link berhasil disalin!');
-    });
+    navigator.clipboard.writeText(input.value).then(() => showToast('Link berhasil disalin!')).catch(() => showToast('Link berhasil disalin!'));
   }
 
-  // ===== DELETE — PERSISTENT =====
   function confirmDelete() {
     const idx = data.invitations.findIndex(inv => inv.id === currentDeleteId);
     if (idx > -1) {
       data.invitations.splice(idx, 1);
       DS.save(data);
       renderInvitations();
-      // Also re-render undangan tab if visible
-      const undanganTbody = document.querySelector('#tab-undangan .invitations-table tbody');
-      if (undanganTbody) {
-        undanganTbody.innerHTML = '';
-        data.invitations.forEach(inv => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = '<td><div class="invitation-preview"><div class="invitation-thumb ' + inv.theme + '">' + inv.icon + '</div><div><span class="invitation-name">' + inv.name + '</span><span class="invitation-type">' + inv.event + '</span></div></div></td><td>' + inv.type + '</td><td>' + inv.date + '</td><td>' + inv.guests + '</td><td><span class="status-badge ' + inv.status + '">' + (inv.status==='aktif'?'Aktif':inv.status==='draft'?'Draft':'Kadaluarsa') + '</span></td><td><div class="action-btns"><button class="action-btn" title="Lihat" onclick="location.href='invitation.html'">&#128065;</button><button class="action-btn" title="Edit" onclick="location.href='editor.html'">&#9998;</button><button class="action-btn" title="Bagikan" onclick="openModal('share', '' + inv.name + '')">&#128279;</button><button class="action-btn" title="Hapus" onclick="openModal('delete', '' + inv.id + '')">&#128465;</button></div></td>';
-          undanganTbody.appendChild(tr);
-        });
-      }
     }
     showToast('Undangan "' + currentDeleteName + '" berhasil dihapus');
     closeModalDirect('delete');
   }
 
-  // ===== ADD GUEST — PERSISTENT =====
   function addGuest(e) {
     e.preventDefault();
     const name = document.getElementById('guest-name').value;
@@ -1893,8 +1840,7 @@
     const count = document.getElementById('guest-count').value || '1';
     if (!name) return;
     const initials = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-    const newGuest = { initials, name, detail: (email || '-') + ' &middot; ' + count + ' orang', status: 'belum', time: 'Baru saja' };
-    data.guests.unshift(newGuest);
+    data.guests.unshift({ initials, name, detail: (email || '-') + ' &middot; ' + count + ' orang', status: 'belum', time: 'Baru saja' });
     data.rsvps.unshift({ initials, name, detail: count + ' orang &middot; Baru saja', status: 'belum' });
     DS.save(data);
     renderGuests();
@@ -1904,7 +1850,6 @@
     document.getElementById('guest-form').reset();
   }
 
-  // ===== UPLOAD — PERSISTENT =====
   function handleUpload() {
     data.gallery += 1;
     DS.save(data);
@@ -1913,7 +1858,6 @@
     closeModalDirect('upload');
   }
 
-  // ===== MARK ALL READ — PERSISTENT =====
   function markAllRead() {
     data.notifRead = true;
     DS.save(data);
@@ -1927,11 +1871,10 @@
     closeModalDirect('notif');
   }
 
-  // ===== EXPORT RSVP =====
   function exportRSVP() {
     let csv = 'Nama,Detail,Status\n';
     data.rsvps.forEach(r => {
-      csv += '"' + r.name + '","' + r.detail + '","' + (r.status==='hadir'?'Hadir':r.status==='tidak'?'Tidak':'Belum') + '"\n';
+      csv += '"' + r.name + '","' + r.detail + '","' + (r.status==="hadir"?"Hadir":r.status==="tidak"?"Tidak":"Belum") + '"\n';
     });
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -1943,7 +1886,6 @@
     showToast('Data RSVP berhasil diexport!');
   }
 
-  // ===== TOAST =====
   function showToast(message) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
@@ -1957,8 +1899,7 @@
     searchInput.addEventListener('input', function() {
       const term = this.value.toLowerCase();
       document.querySelectorAll('.invitations-table tbody tr').forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(term) ? '' : 'none';
+        row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
       });
     });
   }
