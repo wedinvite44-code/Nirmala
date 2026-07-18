@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Masuk - Nirmala Invite</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8D5A3;
+    --gold-dark: #9A7B2C;
+    --cream: #FDF8F0;
+    --cream-dark: #F5EDE0;
+    --charcoal: #2C2C2C;
+    --charcoal-light: #4A4A4A;
+    --white: #FFFFFF;
+    --error: #C0392B;
+    --success: #27AE60;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { font-size: 16px; }
+  body {
+    font-family: 'Lato', sans-serif;
+    background: linear-gradient(160deg, var(--cream) 0%, #F0E8D8 50%, var(--cream-dark) 100%);
+    color: var(--charcoal);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== NAVBAR ===== */
+  .navbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 0.7rem 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(253, 248, 240, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+  }
+  .logo {
+    font-family: 'Great Vibes', cursive;
+    font-size: 1.7rem;
+    color: var(--gold-dark);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .logo span {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--charcoal-light);
+    margin-top: 0.2rem;
+  }
+  .nav-back {
+    font-size: 0.78rem;
+    color: var(--charcoal-light);
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.3s;
+    min-height: 44px;
+  }
+  .nav-back:hover { color: var(--gold-dark); }
+
+  /* ===== AUTH CONTAINER ===== */
+  .auth-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5rem 1rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .auth-wrapper::before {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
+    top: -120px; right: -120px;
+    border-radius: 50%;
+  }
+  .auth-wrapper::after {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%);
+    bottom: -60px; left: -60px;
+    border-radius: 50%;
+  }
+
+  .auth-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 2.2rem 1.8rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.07), 0 6px 15px rgba(0,0,0,0.03);
+    border: 1px solid rgba(201, 168, 76, 0.1);
+    position: relative;
+    z-index: 2;
+    animation: cardEnter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes cardEnter {
+    from { opacity: 0; transform: translateY(25px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 1.6rem;
+  }
+  .auth-logo {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.2rem;
+    color: var(--gold-dark);
+    margin-bottom: 0.2rem;
+  }
+  .auth-logo span {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--charcoal-light);
+    display: block;
+    margin-top: -2px;
+  }
+  .auth-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--charcoal);
+    margin-top: 0.8rem;
+  }
+  .auth-header h2 em {
+    font-family: 'Great Vibes', cursive;
+    color: var(--gold-dark);
+    font-style: normal;
+    font-size: 1.25em;
+  }
+  .auth-header p {
+    font-size: 0.88rem;
+    color: var(--charcoal-light);
+    font-weight: 300;
+    margin-top: 0.3rem;
+    line-height: 1.5;
+  }
+
+  /* ===== FORM ===== */
+  .form-group {
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  .form-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--charcoal-light);
+    margin-bottom: 0.4rem;
+  }
+  .form-input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid rgba(201, 168, 76, 0.12);
+    border-radius: 12px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    color: var(--charcoal);
+    background: var(--cream);
+    transition: all 0.25s ease;
+    outline: none;
+    min-height: 48px;
+  }
+  .form-input::placeholder {
+    color: rgba(74, 74, 74, 0.35);
+    font-weight: 300;
+  }
+  .form-input:focus {
+    border-color: var(--gold);
+    background: var(--white);
+    box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.1);
+  }
+  .form-input.error {
+    border-color: var(--error);
+    box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.08);
+  }
+  .form-error {
+    font-size: 0.75rem;
+    color: var(--error);
+    margin-top: 0.3rem;
+    display: none;
+    padding-left: 0.2rem;
+  }
+  .form-error.show { display: block; }
+
+  .form-row {
+    display: flex;
+    gap: 0.7rem;
+  }
+  .form-row .form-group { flex: 1; }
+
+  /* Password toggle */
+  .password-wrapper { position: relative; }
+  .password-toggle {
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--charcoal-light);
+    opacity: 0.45;
+    transition: opacity 0.3s;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .password-toggle:hover, .password-toggle:active { opacity: 0.8; }
+
+  /* Checkbox */
+  .checkbox-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+  .checkbox-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--gold);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .checkbox-group label {
+    font-size: 0.82rem;
+    color: var(--charcoal-light);
+    cursor: pointer;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .checkbox-group a {
+    color: var(--gold-dark);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .checkbox-group a:hover { text-decoration: underline; }
+
+  /* Submit Button */
+  .btn-submit {
+    width: 100%;
+    padding: 0.85rem;
+    background: linear-gradient(145deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--white);
+    border: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 50px;
+    box-shadow: 0 6px 0 #7A5A1C, 0 10px 25px rgba(201,168,76,0.3), inset 0 2px 6px rgba(255,255,255,0.2);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-bottom: 1rem;
+    min-height: 48px;
+  }
+  .btn-submit:hover, .btn-submit:active {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 0 #7A5A1C, 0 16px 35px rgba(201,168,76,0.4), inset 0 2px 6px rgba(255,255,255,0.25);
+  }
+  .btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 4px 0 #7A5A1C;
+  }
+
+  /* Divider */
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 1rem 0;
+  }
+  .auth-divider-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(201, 168, 76, 0.18);
+  }
+  .auth-divider-text {
+    font-size: 0.7rem;
+    color: var(--charcoal-light);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 300;
+    white-space: nowrap;
+  }
+
+  /* Social Login */
+  .social-login {
+    display: flex;
+    gap: 0.7rem;
+    margin-bottom: 1.2rem;
+  }
+  .social-btn {
+    flex: 1;
+    padding: 0.7rem;
+    border: 2px solid rgba(201, 168, 76, 0.12);
+    border-radius: 12px;
+    background: var(--cream);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    transition: all 0.25s ease;
+    min-height: 48px;
+  }
+  .social-btn:hover, .social-btn:active {
+    border-color: var(--gold);
+    background: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  }
+  .social-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  /* Auth Footer */
+  .auth-footer {
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--charcoal-light);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+  .auth-footer a {
+    color: var(--gold-dark);
+    text-decoration: none;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .auth-footer a:hover { text-decoration: underline; }
+
+  /* Forgot password link */
+  .forgot-link {
+    text-align: right;
+    margin-bottom: 1rem;
+  }
+  .forgot-link a {
+    font-size: 0.8rem;
+    color: var(--gold-dark);
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .forgot-link a:hover { text-decoration: underline; }
+
+  /* Success message */
+  .success-message {
+    background: rgba(39, 174, 96, 0.08);
+    border: 1px solid rgba(39, 174, 96, 0.2);
+    border-radius: 10px;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    display: none;
+  }
+  .success-message.show { display: block; animation: fadeIn 0.4s ease; }
+  .success-message p {
+    color: var(--success);
+    font-size: 0.85rem;
+    font-weight: 400;
+  }
+
+  /* Page transitions */
+  .page-section {
+    display: none;
+  }
+  .page-section.active {
+    display: block;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: var(--white);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    html { font-size: 15px; }
+    .auth-card { padding: 1.6rem 1.2rem; border-radius: 20px; }
+    .auth-logo { font-size: 1.9rem; }
+    .auth-header h2 { font-size: 1.15rem; }
+    .form-row { flex-direction: column; gap: 0; }
+    .social-login { flex-direction: column; }
+    .navbar { padding: 0.6rem 1rem; }
+    .logo { font-size: 1.5rem; }
+    .logo span { font-size: 0.62rem; }
+  }
+  @media (max-width: 360px) {
+    html { font-size: 14px; }
+    .auth-card { padding: 1.4rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="nirmala_invite_final.html" class="logo">Nirmala <span>Invite</span></a>
+  <a href="nirmala_invite_final.html" class="nav-back">&#8592; Kembali</a>
+</nav>
+
+<!-- LOGIN PAGE -->
+<div class="page-section active" id="login-page">
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">Nirmala <span>Invite</span></div>
+        <h2>Selamat Datang <em>Kembali</em></h2>
+        <p>Masuk ke akun Anda untuk melanjutkan</p>
+      </div>
+
+      <div class="success-message" id="login-success">
+        <p>&#10004; Berhasil masuk! Mengalihkan ke dashboard...</p>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="login-email" placeholder="nama@email.com" required>
+          <span class="form-error" id="login-email-error">Email tidak valid</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Kata Sandi</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-input" id="login-password" placeholder="Masukkan kata sandi" required>
+            <button type="button" class="password-toggle" onclick="togglePassword('login-password', this)">&#128065;</button>
+          </div>
+          <span class="form-error" id="login-password-error">Kata sandi minimal 6 karakter</span>
+        </div>
+
+        <div class="forgot-link">
+          <a onclick="showForgot()">Lupa kata sandi?</a>
+        </div>
+
+        <button type="submit" class="btn-submit" id="login-btn">Masuk</button>
+      </form>
+
+      <div class="auth-divider">
+        <div class="auth-divider-line"></div>
+        <span class="auth-divider-text">atau</span>
+        <div class="auth-divider-line"></div>
+      </div>
+
+      <div class="social-login">
+        <button class="social-btn" onclick="socialLogin('google')">
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Google
+        </button>
+        <button class="social-btn" onclick="socialLogin('facebook')">
+          <svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          Facebook
+        </button>
+      </div>
+
+      <div class="auth-footer">
+        Belum punya akun? <a onclick="showRegister()">Daftar Sekarang</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER PAGE -->
+<div class="page-section" id="register-page">
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">Nirmala <span>Invite</span></div>
+        <h2>Buat Akun <em>Baru</em></h2>
+        <p>Daftar gratis dan mulai buat undangan elegan Anda</p>
+      </div>
+
+      <div class="success-message" id="register-success">
+        <p>&#10004; Akun berhasil dibuat! Mengalihkan ke dashboard...</p>
+      </div>
+
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nama Depan</label>
+            <input type="text" class="form-input" id="reg-firstname" placeholder="Nama" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nama Belakang</label>
+            <input type="text" class="form-input" id="reg-lastname" placeholder="Belakang" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="reg-email" placeholder="nama@email.com" required>
+          <span class="form-error" id="reg-email-error">Email tidak valid</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">No. Telepon</label>
+          <input type="tel" class="form-input" id="reg-phone" placeholder="+62 812 3456 7890" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Kata Sandi</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-input" id="reg-password" placeholder="Minimal 6 karakter" required>
+            <button type="button" class="password-toggle" onclick="togglePassword('reg-password', this)">&#128065;</button>
+          </div>
+          <span class="form-error" id="reg-password-error">Kata sandi minimal 6 karakter</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Konfirmasi Kata Sandi</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-input" id="reg-confirm" placeholder="Ulangi kata sandi" required>
+            <button type="button" class="password-toggle" onclick="togglePassword('reg-confirm', this)">&#128065;</button>
+          </div>
+          <span class="form-error" id="reg-confirm-error">Kata sandi tidak cocok</span>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="reg-terms" required>
+          <label for="reg-terms">Saya setuju dengan <a href="#">Syarat & Ketentuan</a> dan <a href="#">Kebijakan Privasi</a></label>
+        </div>
+
+        <button type="submit" class="btn-submit" id="register-btn">Daftar Sekarang</button>
+      </form>
+
+      <div class="auth-divider">
+        <div class="auth-divider-line"></div>
+        <span class="auth-divider-text">atau</span>
+        <div class="auth-divider-line"></div>
+      </div>
+
+      <div class="social-login">
+        <button class="social-btn" onclick="socialLogin('google')">
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Google
+        </button>
+        <button class="social-btn" onclick="socialLogin('facebook')">
+          <svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          Facebook
+        </button>
+      </div>
+
+      <div class="auth-footer">
+        Sudah punya akun? <a onclick="showLogin()">Masuk</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD PAGE -->
+<div class="page-section" id="forgot-page">
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">Nirmala <span>Invite</span></div>
+        <h2>Lupa Kata <em>Sandi?</em></h2>
+        <p>Masukkan email Anda, kami akan kirimkan link reset</p>
+      </div>
+
+      <div class="success-message" id="forgot-success">
+        <p>&#10004; Link reset telah dikirim ke email Anda!</p>
+      </div>
+
+      <form id="forgot-form" onsubmit="handleForgot(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="forgot-email" placeholder="nama@email.com" required>
+        </div>
+
+        <button type="submit" class="btn-submit" id="forgot-btn">Kirim Link Reset</button>
+      </form>
+
+      <div class="auth-footer" style="margin-top: 1rem;">
+        <a onclick="showLogin()">&#8592; Kembali ke Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Navigation
+  function showLogin() {
+    document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+    document.getElementById('login-page').classList.add('active');
+    window.scrollTo(0, 0);
+  }
+  function showRegister() {
+    document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+    document.getElementById('register-page').classList.add('active');
+    window.scrollTo(0, 0);
+  }
+  function showForgot() {
+    document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+    document.getElementById('forgot-page').classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  // Toggle password
+  function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.innerHTML = '&#128064;';
+      btn.style.opacity = '0.7';
+    } else {
+      input.type = 'password';
+      btn.innerHTML = '&#128065;';
+      btn.style.opacity = '';
+    }
+  }
+
+  // Handle Login
+  function handleLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
+    document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+
+    let valid = true;
+    if (!email.includes('@')) {
+      document.getElementById('login-email-error').classList.add('show');
+      document.getElementById('login-email').classList.add('error');
+      valid = false;
+    }
+    if (password.length < 6) {
+      document.getElementById('login-password-error').classList.add('show');
+      document.getElementById('login-password').classList.add('error');
+      valid = false;
+    }
+    if (!valid) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Memproses...';
+
+    setTimeout(() => {
+      document.getElementById('login-success').classList.add('show');
+      btn.innerHTML = 'Masuk';
+      btn.disabled = false;
+      setTimeout(() => {
+        location.href = 'nirmala_dashboard.html';
+      }, 1200);
+    }, 1500);
+  }
+
+  // Handle Register
+  function handleRegister(e) {
+    e.preventDefault();
+    const btn = document.getElementById('register-btn');
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+    const confirm = document.getElementById('reg-confirm').value;
+
+    document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
+    document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+
+    let valid = true;
+    if (!email.includes('@')) {
+      document.getElementById('reg-email-error').classList.add('show');
+      document.getElementById('reg-email').classList.add('error');
+      valid = false;
+    }
+    if (password.length < 6) {
+      document.getElementById('reg-password-error').classList.add('show');
+      document.getElementById('reg-password').classList.add('error');
+      valid = false;
+    }
+    if (password !== confirm) {
+      document.getElementById('reg-confirm-error').classList.add('show');
+      document.getElementById('reg-confirm').classList.add('error');
+      valid = false;
+    }
+    if (!valid) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Memproses...';
+
+    setTimeout(() => {
+      document.getElementById('register-success').classList.add('show');
+      btn.innerHTML = 'Daftar Sekarang';
+      btn.disabled = false;
+      setTimeout(() => {
+        location.href = 'nirmala_dashboard.html';
+      }, 1500);
+    }, 1800);
+  }
+
+  // Handle Forgot
+  function handleForgot(e) {
+    e.preventDefault();
+    const btn = document.getElementById('forgot-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Mengirim...';
+
+    setTimeout(() => {
+      document.getElementById('forgot-success').classList.add('show');
+      btn.innerHTML = 'Kirim Link Reset';
+      btn.disabled = false;
+      document.getElementById('forgot-email').value = '';
+    }, 1500);
+  }
+
+  // Social Login
+  function socialLogin(provider) {
+    alert('Login dengan ' + provider + ' (integrasi OAuth)');
+  }
+</script>
+
+</body>
+</html>
