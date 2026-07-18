@@ -1327,7 +1327,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr id="row-royal">
               <td>
                 <div class="invitation-preview">
                   <div class="invitation-thumb">&#128141;</div>
@@ -1350,7 +1350,7 @@
                 </div>
               </td>
             </tr>
-            <tr>
+            <tr id="row-rose">
               <td>
                 <div class="invitation-preview">
                   <div class="invitation-thumb rose">&#127801;</div>
@@ -1373,7 +1373,7 @@
                 </div>
               </td>
             </tr>
-            <tr>
+            <tr id="row-sage">
               <td>
                 <div class="invitation-preview">
                   <div class="invitation-thumb sage">&#127807;</div>
@@ -1668,7 +1668,7 @@
           </select>
         </form>
       </div>
-      <div class="modal-footer"><button class="modal-btn modal-btn-secondary" onclick="closeModalDirect('guest')">Batal</button><button class="modal-btn modal-btn-primary" onclick="document.getElementById('guest-form').dispatchEvent(new Event('submit'))">Simpan Tamu</button></div>
+      <div class="modal-footer"><button class="modal-btn modal-btn-secondary" onclick="closeModalDirect('guest')">Batal</button><button class="modal-btn modal-btn-primary" onclick="addGuest(new Event('submit'))">Simpan Tamu</button></div>
     </div>
   </div>
 
@@ -1683,7 +1683,7 @@
           <p style="font-size:0.7rem;color:rgba(74,74,74,0.5);margin-top:0.3rem;">JPG, PNG (Maks. 2MB per foto)</p>
         </div>
       </div>
-      <div class="modal-footer"><button class="modal-btn modal-btn-secondary" onclick="closeModalDirect('upload')">Batal</button><button class="modal-btn modal-btn-primary" onclick="showToast('Foto berhasil diunggah!');closeModalDirect('upload');">Unggah</button></div>
+      <div class="modal-footer"><button class="modal-btn modal-btn-secondary" onclick="closeModalDirect('upload')">Batal</button><button class="modal-btn modal-btn-primary" onclick="handleUpload()">Unggah</button></div>
     </div>
   </div>
 
@@ -1772,7 +1772,6 @@
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     const target = document.getElementById('tab-' + tab);
     if (target) target.classList.add('active');
-    // Update page title
     const titles = {
       dashboard: 'Dashboard <em>Utama</em>',
       undangan: 'Undangan <em>Saya</em>',
@@ -1792,11 +1791,13 @@
 
   // ===== MODAL SYSTEM =====
   let currentDeleteName = '';
+  let currentDeleteId = '';
   function openModal(type, data) {
     const modal = document.getElementById('modal-' + type);
     if (!modal) return;
     if (type === 'delete' && data) {
       currentDeleteName = data;
+      currentDeleteId = data === 'The Royal' ? 'row-royal' : data === 'Rose Garden' ? 'row-rose' : 'row-sage';
       document.getElementById('delete-name').textContent = data;
     }
     if (type === 'share' && data) {
@@ -1831,21 +1832,74 @@
     });
   }
 
-  // ===== DELETE CONFIRM =====
+  // ===== DELETE — ACTUALLY REMOVES ROW =====
   function confirmDelete() {
+    const row = document.getElementById(currentDeleteId);
+    const row2 = document.getElementById(currentDeleteId + '-2');
+    if (row) {
+      row.style.transition = 'all 0.5s ease';
+      row.style.opacity = '0';
+      row.style.transform = 'translateX(30px)';
+      setTimeout(() => row.remove(), 500);
+    }
+    if (row2) {
+      row2.style.transition = 'all 0.5s ease';
+      row2.style.opacity = '0';
+      row2.style.transform = 'translateX(30px)';
+      setTimeout(() => row2.remove(), 500);
+    }
+    // Update stats
+    const totalEl = document.querySelector('.stat-card.gold .stat-value');
+    if (totalEl) {
+      let current = parseInt(totalEl.textContent);
+      totalEl.textContent = Math.max(0, current - 1);
+    }
     showToast('Undangan "' + currentDeleteName + '" berhasil dihapus');
     closeModalDirect('delete');
   }
 
-  // ===== ADD GUEST =====
+  // ===== ADD GUEST — ACTUALLY ADDS TO LIST =====
   function addGuest(e) {
     e.preventDefault();
     const name = document.getElementById('guest-name').value;
-    if (name) {
-      showToast('Tamu "' + name + '" berhasil ditambahkan!');
-      closeModalDirect('guest');
-      document.getElementById('guest-form').reset();
+    const email = document.getElementById('guest-email').value;
+    const count = document.getElementById('guest-count').value;
+    if (!name) return;
+
+    const initials = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+    const guestHTML = '<div class="rsvp-item" style="animation:fadeIn 0.5s ease;"><div class="rsvp-avatar">' + initials + '</div><div class="rsvp-info"><span class="rsvp-name">' + name + '</span><span class="rsvp-detail">' + (email || '-') + ' &middot; ' + (count || '1') + ' orang</span></div><span class="rsvp-status belum">Belum</span></div>';
+
+    // Add to guest list in tab-tamu
+    const guestList = document.querySelector('#tab-tamu .rsvp-list');
+    if (guestList) guestList.insertAdjacentHTML('afterbegin', guestHTML);
+
+    // Also add to RSVP list
+    const rsvpList = document.querySelector('#tab-rsvp .rsvp-list');
+    if (rsvpList) rsvpList.insertAdjacentHTML('afterbegin', guestHTML);
+
+    // Update badge count
+    const badge = document.querySelector('.nav-item:nth-child(4) .nav-badge');
+    if (badge) {
+      let c = parseInt(badge.textContent) || 0;
+      badge.textContent = c + 1;
     }
+
+    showToast('Tamu "' + name + '" berhasil ditambahkan!');
+    closeModalDirect('guest');
+    document.getElementById('guest-form').reset();
+  }
+
+  // ===== UPLOAD — ACTUALLY ADDS PHOTO =====
+  function handleUpload() {
+    const gallery = document.querySelector('#tab-galeri div[style*="grid-template-columns"]');
+    if (gallery) {
+      const newPhoto = document.createElement('div');
+      newPhoto.style.cssText = 'aspect-ratio:1;background:linear-gradient(135deg,#D4A574,#C9A84C);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2rem;animation:fadeIn 0.5s ease;';
+      newPhoto.innerHTML = '&#128247;';
+      gallery.appendChild(newPhoto);
+    }
+    showToast('Foto berhasil diunggah ke galeri!');
+    closeModalDirect('upload');
   }
 
   // ===== MARK ALL READ =====
@@ -1855,14 +1909,30 @@
       const dot = item.querySelector('.notif-dot');
       if (dot) dot.remove();
     });
-    document.querySelector('.notif-badge').style.display = 'none';
+    const badge = document.querySelector('.notif-badge');
+    if (badge) badge.style.display = 'none';
     showToast('Semua notifikasi telah dibaca');
     closeModalDirect('notif');
   }
 
   // ===== EXPORT RSVP =====
   function exportRSVP() {
-    showToast('Data RSVP berhasil diexport ke CSV!');
+    const rows = document.querySelectorAll('#tab-rsvp .rsvp-item, #tab-tamu .rsvp-item');
+    let csv = 'Nama,Email,Jumlah,Status\n';
+    rows.forEach(row => {
+      const name = row.querySelector('.rsvp-name')?.textContent || '';
+      const detail = row.querySelector('.rsvp-detail')?.textContent || '';
+      const status = row.querySelector('.rsvp-status')?.textContent || '';
+      csv += '"' + name + '","' + detail + '","' + status + '"\n';
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'rsvp-list.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Data RSVP berhasil diexport!');
   }
 
   // ===== TOAST =====
